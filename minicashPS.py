@@ -3,9 +3,7 @@ import socketserver
 import re
 import argparse
 import hashlib
-import signal
-from daemon import DaemonContext
-from daemon.daemon import DaemonOSEnvironmentError
+from minicash.utils.checksum import isValidProof
 
 peersMap = {}
 
@@ -80,9 +78,6 @@ class PeerHandler(socketserver.BaseRequestHandler):
 
         self.request.sendall(json.dumps(response).encode('utf-8'))
 
-def interruptHandler(signum, frame):
-    stop()
-
 
 def isValidProof(fprint, proof, difficulty):
     keyhash = hashlib.sha256()
@@ -116,17 +111,7 @@ if __name__ == '__main__':
     else:
         host = ''
     port = 9999
-    dcontext = DaemonContext()
-    dcontext.stderr = open('minicashPeerServer.err', 'w+')
-    print('Staring the daemon..')
-    try:
-        with dcontext:
-            signal.signal(signal.SIGINT, interruptHandler)
-            signal.signal(signal.SIGTERM, interruptHandler)
-            socketserver.TCPServer.allow_reuse_address = True
-            server = socketserver.TCPServer((host, port), PeerHandler)
-            server.serve_forever()
+    socketserver.TCPServer.allow_reuse_address = True
+    server = socketserver.TCPServer((host, port), PeerHandler)
+    server.serve_forever()
 
-    except DaemonOSEnvironmentError as e:
-        print('ERROR: {}'.format(e))
-        exit()
