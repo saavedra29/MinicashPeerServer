@@ -7,6 +7,7 @@ import hashlib
 from daemon import DaemonContext
 from daemon.daemon import DaemonOSEnvironmentError
 
+DIFFICULTY = 7
 peersMap = {}
 HOMEDIR = ''
 MINICASHDIR = ''
@@ -58,7 +59,7 @@ class PeerHandler(socketserver.BaseRequestHandler):
                 partial = True
                 continue
             # Check for valid proof of work
-            if not isValidProof(fprint, proof, 6):
+            if not isValidProof(fprint, proof, DIFFICULTY):
                 partial = True
                 continue
 
