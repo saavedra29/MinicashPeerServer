@@ -3,7 +3,6 @@ import socketserver
 import re
 import argparse
 import hashlib
-from minicash.utils.checksum import isValidProof
 
 peersMap = {}
 
